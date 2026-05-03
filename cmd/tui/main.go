@@ -13,6 +13,7 @@ package main
 import (
         "fmt"
         "os"
+        "time"
 
         "github.com/WaClaw-App/waclaw/internal/tui"
         "github.com/WaClaw-App/waclaw/internal/tui/rpc"
@@ -91,7 +92,10 @@ func main() {
 
         // Start the RPC client with stdin/stdout. The read loop runs in a
         // background goroutine and publishes incoming messages to the bus.
-        rpcClient.Start(os.Stdin, os.Stdout)
+        // The returned tea.Cmd fires RPCClosedMsg when the backend disconnects,
+        // allowing the app to react gracefully rather than silently losing
+        // RPC communication.
+        rpcCmd := rpcClient.Start(os.Stdin, os.Stdout)
 
         // In demo mode (WA_DEMO=1), stdin/stdout are connected to the backend
         // via named pipes for RPC. Bubbletea must use /dev/tty for the actual
@@ -111,6 +115,19 @@ func main() {
 
         // Create bubbletea program with alt screen and mouse support.
         p := tea.NewProgram(app, teaOpts...)
+
+        // If the RPC client returned a command, send it to bubbletea so it
+        // can process RPCClosedMsg when the backend disconnects. This must
+        // happen after p.Run() starts, so we use a goroutine that waits for
+        // the program to be ready before sending.
+        if rpcCmd != nil {
+                go func() {
+                        // p.Send() is safe to call after p.Run() starts.
+                        // A small delay ensures the program's event loop is running.
+                        time.Sleep(100 * time.Millisecond)
+                        p.Send(rpcCmd())
+                }()
+        }
 
         if _, err := p.Run(); err != nil {
                 fmt.Fprintf(os.Stderr, "waclaw-tui: %v\n", err)

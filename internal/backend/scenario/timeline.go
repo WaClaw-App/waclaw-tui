@@ -19,10 +19,11 @@ import (
 // Design: Each timeline step is a function that performs one action (navigate,
 // notify, update). Steps are executed sequentially with delays between them.
 type Timeline struct {
-        engine *Engine
-        mu     sync.Mutex
-        running bool
-        stopCh chan struct{}
+        engine     *Engine
+        mu         sync.Mutex
+        running    bool
+        stopCh     chan struct{}
+        cycleCount int // tracks how many full cycles have completed
 }
 
 // NewTimeline creates a new Timeline bound to the given engine.
@@ -66,21 +67,26 @@ func (t *Timeline) Stop() {
         }
 }
 
-// run executes the demo sequence step by step.
+// run executes the demo sequence step by step, then loops back to the
+// returning-user boot sequence. The demo cycles indefinitely until Stop()
+// is called or the stopCh is closed.
 func (t *Timeline) run() {
-        steps := t.buildSequence()
+        for {
+                steps := t.buildSequence()
 
-        for _, step := range steps {
-                select {
-                case <-t.stopCh:
-                        log.Println("[timeline] stopped")
-                        return
-                case <-time.After(step.Delay):
-                        step.Action()
+                for _, step := range steps {
+                        select {
+                        case <-t.stopCh:
+                                log.Println("[timeline] stopped")
+                                return
+                        case <-time.After(step.Delay):
+                                step.Action()
+                        }
                 }
-        }
 
-        log.Println("[timeline] demo sequence complete")
+                t.cycleCount++
+                log.Println("[timeline] demo cycle complete, restarting")
+        }
 }
 
 // buildSequence constructs the full demo walkthrough steps.
@@ -93,7 +99,17 @@ func (t *Timeline) run() {
 //
 // Between screen transitions, notifications and data updates are
 // injected to simulate realistic backend activity.
+//
+// On the first cycle, the boot screen shows BootFirstTime (per
+// doc/18-screen-flow.md). On subsequent cycles, it shows BootReturning
+// to match the documented returning-user flow.
 func (t *Timeline) buildSequence() []Step {
+        // First cycle: first-time boot. Subsequent cycles: returning-user boot.
+        bootState := protocol.BootFirstTime
+        if t.cycleCount > 0 {
+                bootState = protocol.BootReturning
+        }
+
         return []Step{
                 // Boot sequence.
                 {
@@ -103,7 +119,7 @@ func (t *Timeline) buildSequence() []Step {
                 {
                         Delay:  2 * time.Second,
                         Action: func() {
-                                t.engine.transitionTo(protocol.ScreenBoot, protocol.BootFirstTime)
+                                t.engine.transitionTo(protocol.ScreenBoot, bootState)
                         },
                 },
 
@@ -377,7 +393,6 @@ func (t *Timeline) buildSequence() []Step {
                         Delay:  5 * time.Second,
                         Action: func() {
                                 t.engine.transitionTo(protocol.ScreenBoot, protocol.BootReturning)
-                                log.Println("[timeline] demo cycle complete, restarting")
                         },
                 },
         }
