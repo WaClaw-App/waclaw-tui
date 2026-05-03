@@ -290,6 +290,13 @@ func (a *App) View() string {
 // handleGlobalKeys processes keys that work on every screen.
 // Uses the key.Binding infrastructure from keymap.go for consistent,
 // DRY key matching — no raw string comparisons.
+//
+// Screens can implement the KeyConsumer interface to claim priority
+// on keys that would otherwise be consumed here (e.g. "q" for local
+// back navigation within sub-states, or "v" for screen-specific
+// actions). If the current screen's ConsumesKey returns true, the
+// key is passed through to the screen's Update instead.
+//
 // Returns a tea.Cmd and true if the key was consumed globally.
 func (a *App) handleGlobalKeys(msg tea.KeyMsg) (tea.Cmd, bool) {
         // ── Command palette (highest priority overlay) ──
@@ -362,6 +369,20 @@ func (a *App) handleGlobalKeys(msg tea.KeyMsg) (tea.Cmd, bool) {
                         return nil, true
                 }
                 return nil, true
+        }
+
+        // ── Screen-priority keys ──
+        // For keys that have both a global action and a screen-local action,
+        // check if the current screen wants to consume the key first.
+        // This allows screens with sub-states to handle "q" for local back
+        // navigation (e.g. detail → overview) or "v" for screen-specific
+        // actions (e.g. validate retry in send_failed) instead of the
+        // global navigate-to-screen behavior.
+        if cur := a.router.Current(); cur != nil {
+                if kc, ok := cur.(KeyConsumer); ok && kc.ConsumesKey(msg) {
+                        // Screen claims this key — pass it through.
+                        return nil, false
+                }
         }
 
         // ── Navigation shortcuts ──

@@ -1174,6 +1174,10 @@ var en = map[string]string{
         "shortcuts.nerd_stats":     "nerd stats",
         "shortcuts.check_update":   "check update",
         "shortcuts.cmd_palette":    "command palette",
+        "shortcuts.new_item":      "new",
+        "shortcuts.edit":          "edit",
+        "shortcuts.switch_tab":    "switch tab",
+        "shortcuts.cancel_close":  "cancel/close",
         "shortcuts.press_any_key":  "press any key to close",
 
         // Nerd stats

@@ -120,6 +120,48 @@ var (
                 key.WithHelp("esc", "cancel/close"),
         )
 
+        // KeyBlock skips and blocks the current item (lead review).
+        KeyBlock = key.NewBinding(
+                key.WithKeys("x"),
+                key.WithHelp("x", "skip & block"),
+        )
+
+        // KeyDetail shows detail view for the current item (lead review).
+        KeyDetail = key.NewBinding(
+                key.WithKeys("d"),
+                key.WithHelp("d", "detail"),
+        )
+
+        // KeyAutoAll approves or applies action to all items (follow-up).
+        KeyAutoAll = key.NewBinding(
+                key.WithKeys("a"),
+                key.WithHelp("a", "auto-all"),
+        )
+
+        // KeySpace toggles checkbox selection (niche select).
+        KeySpace = key.NewBinding(
+                key.WithKeys(" "),
+                key.WithHelp("space", "toggle"),
+        )
+
+        // KeyLeft navigates to previous item/date (history).
+        KeyLeft = key.NewBinding(
+                key.WithKeys("left"),
+                key.WithHelp("←", "previous"),
+        )
+
+        // KeyRight navigates to next item/date (history).
+        KeyRight = key.NewBinding(
+                key.WithKeys("right"),
+                key.WithHelp("→", "next"),
+        )
+
+        // KeyPlus adds a new slot/item (login).
+        KeyPlus = key.NewBinding(
+                key.WithKeys("+"),
+                key.WithHelp("+", "add"),
+        )
+
         // Numeric keys for secondary actions (1-9).
         Key1 = key.NewBinding(key.WithKeys("1"), key.WithHelp("1", "option 1"))
         Key2 = key.NewBinding(key.WithKeys("2"), key.WithHelp("2", "option 2"))
@@ -143,6 +185,8 @@ var (
                 &KeyPause, &KeyRefresh, &KeySearch, &KeyHelp,
                 &KeyValidate, &KeyLicense, &KeyHistory, &KeyNerdStats,
                 &KeyUpdate, &KeyCmdPalette, &KeyEscape, &KeyTab,
+                &KeyNew, &KeyEdit, &KeyBlock, &KeyDetail, &KeyAutoAll,
+                &KeySpace, &KeyLeft, &KeyRight, &KeyPlus,
         }
 
         // AllKeys returns every key binding.

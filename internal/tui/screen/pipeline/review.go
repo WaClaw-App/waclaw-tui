@@ -200,6 +200,17 @@ func (r *Review) Focus() {}
 // Blur is called when this screen is no longer the active screen.
 func (r *Review) Blur() {}
 
+// ConsumesKey implements tui.KeyConsumer. Review has sub-states (lead_detail,
+// template_preview) where "q" should navigate back locally to reviewing instead
+// of popping the navigation stack.
+func (r *Review) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return r.state == protocol.ReviewLeadDetail || r.state == protocol.ReviewTemplatePreview
+        }
+        return false
+}
+
 // ---------------------------------------------------------------------------
 // Key handling
 // ---------------------------------------------------------------------------

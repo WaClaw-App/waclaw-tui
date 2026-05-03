@@ -126,6 +126,17 @@ func (c *Compose) Focus() {
 
 func (c *Compose) Blur() {}
 
+// ConsumesKey implements tui.KeyConsumer. Compose has sub-states (preview,
+// template_pick) where "q" should navigate back locally to draft instead of
+// popping the navigation stack.
+func (c *Compose) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return c.state == protocol.ComposePreview || c.state == protocol.ComposeTemplatePick
+        }
+        return false
+}
+
 // HandleNavigate processes navigate commands from the backend.
 func (c *Compose) HandleNavigate(params map[string]any) error {
         if t, ok := params[protocol.ParamTarget].(string); ok {
@@ -271,6 +282,13 @@ func (c *Compose) handlePreviewKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
                 return c, nil
         }
 
+        // "q" → back to draft.
+        if msg.String() == "q" {
+                c.state = protocol.ComposeDraft
+                c.PreviewEnteredAt = time.Time{}
+                return c, nil
+        }
+
         return c, nil
 }
 
@@ -313,6 +331,12 @@ func (c *Compose) handlePickKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
                 c.Draft = c.Snippets[c.SnippetCursor].Text
                 c.CursorPos = len(c.Draft)
                 c.CharCount = len(c.Draft)
+                c.state = protocol.ComposeDraft
+                return c, nil
+        }
+
+        // "q" → back to draft.
+        if msg.String() == "q" {
                 c.state = protocol.ComposeDraft
                 return c, nil
         }

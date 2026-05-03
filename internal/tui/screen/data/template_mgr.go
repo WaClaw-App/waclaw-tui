@@ -166,6 +166,17 @@ func (s *TemplateMgr) Focus() {
 // Blur is called when the screen becomes inactive.
 func (s *TemplateMgr) Blur() {}
 
+// ConsumesKey implements tui.KeyConsumer. TemplateMgr has sub-states (preview,
+// edit_hint, validation_error) where "q" should navigate back locally to the
+// template list instead of popping the navigation stack.
+func (s *TemplateMgr) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return s.state == protocol.TemplatePreview || s.state == protocol.TemplateEditHint || s.state == protocol.TemplateValidationError
+        }
+        return false
+}
+
 // HandleNavigate processes a "navigate" command from the backend.
 func (s *TemplateMgr) HandleNavigate(params map[string]any) error {
         s.animStart = time.Now()

@@ -1174,6 +1174,10 @@ var id = map[string]string{
         "shortcuts.nerd_stats":     "nerd stats",
         "shortcuts.check_update":   "cek update",
         "shortcuts.cmd_palette":    "command palette",
+        "shortcuts.new_item":      "baru",
+        "shortcuts.edit":          "edit",
+        "shortcuts.switch_tab":    "pindah tab",
+        "shortcuts.cancel_close":  "batal/tutup",
         "shortcuts.press_any_key":  "tekan apa aja buat tutup",
 
         // Nerd stats

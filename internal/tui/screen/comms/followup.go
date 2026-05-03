@@ -209,6 +209,21 @@ func (f *FollowUp) Focus() {
 
 func (f *FollowUp) Blur() { f.focused = false }
 
+// ConsumesKey implements tui.KeyConsumer. The FollowUp screen has sub-states
+// (NicheDetail, Sending, ColdList, Recontact) where "q" should navigate
+// back locally to the dashboard instead of popping the navigation stack.
+func (f *FollowUp) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                // In sub-states, "q" goes back to dashboard locally.
+                return f.state == protocol.FollowUpNicheDetail ||
+                        f.state == protocol.FollowUpSending ||
+                        f.state == protocol.FollowUpColdList ||
+                        f.state == protocol.FollowUpRecontact
+        }
+        return false
+}
+
 // HandleNavigate processes navigate commands from the backend.
 func (f *FollowUp) HandleNavigate(params map[string]any) error {
         if state, ok := params[protocol.ParamState].(string); ok {

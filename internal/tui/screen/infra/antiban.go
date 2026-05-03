@@ -235,7 +235,10 @@ func (s *Shield) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         if key, ok := msg.(tea.KeyMsg); ok {
                 switch key.String() {
                 case "q":
-                        return s, nil
+                        if s.state == protocol.ShieldSlotDetail || s.state == protocol.ShieldSettings {
+                                s.state = protocol.ShieldOverview
+                        }
+                        // In overview/warning/danger, let global handler pop the screen.
                 case "up", "k":
                         if s.state == protocol.ShieldOverview || s.state == protocol.ShieldWarning || s.state == protocol.ShieldDanger {
                                 if s.selectedSlot > 0 {
@@ -618,6 +621,18 @@ func (s *Shield) HandleUpdate(params map[string]any) error {
 
 func (s *Shield) Focus() { s.focused = true }
 func (s *Shield) Blur()  { s.focused = false }
+
+// ConsumesKey implements tui.KeyConsumer. The Shield screen has sub-states
+// (SlotDetail, Settings) where "q" should navigate back locally to the
+// overview instead of popping the navigation stack.
+func (s *Shield) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                // In sub-states, "q" goes back locally.
+                return s.state == protocol.ShieldSlotDetail || s.state == protocol.ShieldSettings
+        }
+        return false
+}
 
 // ---------------------------------------------------------------------------
 // Shared view helpers

@@ -162,6 +162,17 @@ func (h *History) Focus() {
 
 func (h *History) Blur() {}
 
+// ConsumesKey implements tui.KeyConsumer. History has sub-states (week,
+// day_detail) where "q" should navigate back locally instead of popping the
+// navigation stack.
+func (h *History) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return h.state == protocol.HistoryWeek || h.state == protocol.HistoryDayDetail
+        }
+        return false
+}
+
 // HandleNavigate processes navigate commands from the backend.
 func (h *History) HandleNavigate(params map[string]any) error {
         if state, ok := params[protocol.ParamState].(string); ok {
@@ -294,8 +305,10 @@ func (h *History) handleWeekKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
                 return h, nil
         }
 
-        // "q" → back (let global handler pop screen).
+        // "q" → back to today view.
         if msg.String() == "q" {
+                h.state = protocol.HistoryToday
+                h.AnimStart = time.Now()
                 return h, nil
         }
 

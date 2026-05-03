@@ -1285,6 +1285,10 @@ const (
         KeyShortcutsNerdStats    = "shortcuts.nerd_stats"
         KeyShortcutsCheckUpdate  = "shortcuts.check_update"
         KeyShortcutsCmdPalette   = "shortcuts.cmd_palette"
+        KeyShortcutsNewItem      = "shortcuts.new_item"
+        KeyShortcutsEdit         = "shortcuts.edit"
+        KeyShortcutsSwitchTab    = "shortcuts.switch_tab"
+        KeyShortcutsCancelClose  = "shortcuts.cancel_close"
         KeyShortcutsPressAnyKey  = "shortcuts.press_any_key"
 )
 

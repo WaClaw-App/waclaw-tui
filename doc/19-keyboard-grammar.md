@@ -3,6 +3,8 @@
 
 **Hafal sekali. Pakai selamanya. Tombol yang sama, tiap screen.**
 
+### Universal Keys (selalu ada di semua screen)
+
 | Tombol | Selalu Ngejek |
 |--------|---------------|
 | `↑/↓` | Pindah item |
@@ -21,6 +23,42 @@
 | `u` | Update — cek versi baru |
 | `Ctrl+K` | Command palette — search & execute apapun |
 | `esc` | Batal / tutup modal / keluar compose / tutup palette |
+| `n` | Baru — bikin item baru (template, worker) |
+| `e` | Edit — edit item / config |
+| `tab` | Pindah tab / niche group |
+| `space` | Centang / hapus pilihan (niche select) |
+
+### Screen-Local Keys (cuma ada di screen tertentu)
+
+| Tombol | Screen | Aksi |
+|--------|--------|------|
+| `x` | Lead Review | Skip & block lead |
+| `d` | Lead Review | Liat detail lead |
+| `a` | Follow-Up | Auto-approve semua |
+| `+` | Login | Tambah slot WA |
+| `←` | History | Hari sebelumnya |
+| `→` | History | Hari berikutnya |
+| `w` | History | Pindah ke tampilan minggu |
+| `t` | History | Pindah ke tampilan hari ini |
+| `space` | Niche Select | Centang/hapus niche |
+
+### Perilaku `q` (Context-Dependent)
+
+`q` selalu berarti "balik" tapi beda-beda tergantung context:
+
+- **Di sub-state** (detail, settings, preview): balik ke state sebelumnya dalam screen yang sama
+- **Di screen utama** (overview, dashboard): balik ke screen sebelumnya (pop navigation stack)
+- **Di root screen**: pertama kali → tampilin session summary, kedua kali → keluar app
+
+Contoh:
+- Di Shield slot detail → `q` balik ke Shield overview
+- Di Shield overview → `q` balik ke Monitor
+- Di Monitor (root) → `q` tampilin session summary → `q` lagi keluar
+
+### Perilaku `v` (Context-Dependent)
+
+- **Di Send failed state**: `v` = validate & retry (aksi lokal)
+- **Di screen lain**: `v` = navigasi ke Guardrail screen
 
 **Overlay `?`:**
 
@@ -30,10 +68,15 @@
 
   ↑↓   pindah
   ↵    aksi utama
-  1-3  pilih opsi
+  1-9  pilih opsi
   s    skip
   q    balik/keluar
+  p    pause
+  n    baru
+  e    edit
   /    cari
+  tab  pindah tab
+  esc  batal/tutup
   v    validasi config
   l    lisensi
   h    riwayat

@@ -65,6 +65,17 @@ func (s *Send) Focus() {}
 // Blur is called when this screen is no longer the active screen.
 func (s *Send) Blur() {}
 
+// ConsumesKey implements tui.KeyConsumer. The Send screen claims "v" in the
+// send_failed state so it can trigger validate-retry instead of navigating
+// to the Guardrail screen.
+func (s *Send) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "v":
+                return s.state == protocol.SendFailed
+        }
+        return false
+}
+
 // SetSize updates the terminal dimensions for layout calculations.
 func (s *Send) SetSize(w, h int) {
         s.width = w

@@ -297,6 +297,17 @@ func (w *Workers) Focus() { w.focused = true }
 // Blur marks the screen as inactive.
 func (w *Workers) Blur() { w.focused = false }
 
+// ConsumesKey implements tui.KeyConsumer. Workers has sub-states (detail,
+// paused, add_niche) where "q" should navigate back locally to overview
+// instead of popping the navigation stack.
+func (w *Workers) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return w.state == protocol.WorkerDetail || w.state == protocol.WorkersPaused || w.state == protocol.WorkerAddNiche
+        }
+        return false
+}
+
 // ---------------------------------------------------------------------------
 // Key handling
 // ---------------------------------------------------------------------------
@@ -326,8 +337,10 @@ func (w *Workers) handleKey(key tea.KeyMsg) tea.Model {
                         }
                 }
         case "q":
-                // Let App handle back navigation
-                return w
+                // Navigate back locally from sub-states to overview.
+                if w.state == protocol.WorkerDetail || w.state == protocol.WorkersPaused || w.state == protocol.WorkerAddNiche {
+                        w.state = protocol.WorkersOverview
+                }
         case "n":
                 if w.state == protocol.WorkersOverview {
                         w.state = protocol.WorkerAddNiche

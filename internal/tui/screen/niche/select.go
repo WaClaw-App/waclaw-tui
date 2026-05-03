@@ -99,6 +99,17 @@ func (m *SelectModel) Focus() {
 // Blur is called when this screen is no longer the active screen.
 func (m *SelectModel) Blur() { m.focused = false }
 
+// ConsumesKey implements tui.KeyConsumer. SelectModel has sub-states (custom,
+// edit_filters, config_error) where "q" should navigate back locally to the
+// niche list instead of popping the navigation stack.
+func (m *SelectModel) ConsumesKey(msg tea.KeyMsg) bool {
+        switch msg.String() {
+        case "q":
+                return m.state == protocol.NicheCustom || m.state == protocol.NicheEditFilters || m.state == protocol.NicheConfigError
+        }
+        return false
+}
+
 // HandleNavigate processes a "navigate" command from the backend.
 func (m *SelectModel) HandleNavigate(params map[string]any) error {
         if stateStr, ok := params[protocol.ParamState].(string); ok {
