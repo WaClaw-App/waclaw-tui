@@ -1078,6 +1078,7 @@ var en = map[string]string{
         "palette.cmd_resume_all":   "Resume all workers",
         "palette.cmd_logout_wa":    "Logout WA all slots",
         "palette.cmd_force_retry":  "Force scrape retry",
+        "palette.cmd_language":     "Switch language / Ganti bahasa",
 
         // Notification severities
         "notif.critical":    "critical",

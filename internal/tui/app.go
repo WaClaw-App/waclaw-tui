@@ -61,6 +61,11 @@ func NewApp() *App {
 
         cp := overlay.NewCmdPalette()
         cp.OnExecute = func(cmd overlay.Command) {
+                // Language toggle → toggle locale directly.
+                if cmd.Name == i18n.T(i18n.KeyPaletteCmdLanguage) {
+                        ToggleLocale()
+                        return
+                }
                 // Navigation commands → push to router.
                 if cmd.Screen != protocol.ScreenID("") {
                         r.Push(cmd.Screen)

@@ -1078,6 +1078,7 @@ var id = map[string]string{
         "palette.cmd_resume_all":   "Resume semua worker",
         "palette.cmd_logout_wa":    "Logout WA semua slot",
         "palette.cmd_force_retry":  "Force scrape retry",
+        "palette.cmd_language":     "Ganti bahasa / Switch language",
 
         // Notification severities
         "notif.critical":    "kritis",

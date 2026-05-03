@@ -87,7 +87,7 @@ Bahasa di-set di `~/.waclaw/config.yaml`:
 locale: id  # "id" (default) atau "en"
 ```
 
-Bisa diganti runtime lewat Ctrl+K command palette atau tombol `l`.
+Bisa diganti runtime lewat Ctrl+K command palette → search "language" atau "bahasa". Tombol `l` buat navigasi ke License screen, bukan ganti bahasa.
 
 Semua display string disimpen di `internal/tui/i18n/` — dua map: `id.go` (Indonesian) dan `en.go` (English). Kode tetap English semua. Yang Indonesia cuma yang user liat di layar.
 

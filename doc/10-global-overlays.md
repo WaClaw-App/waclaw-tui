@@ -229,6 +229,7 @@ Empty state: helpful suggestions, bukan cuma "no results". Lu tau command apa ya
   Mark lead converted           —      ·  response
   Block lead                    —      ·  response
   Re-contact cold lead          —      ·  followup
+  Switch language / Ganti bahasa —     ·  overlay
 ```
 
 **Key behaviors:**

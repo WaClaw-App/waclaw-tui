@@ -46,7 +46,7 @@ BOOT → LICENSE → GUARDRAIL (Validation) → LOGIN → NICHE SELECT → SCRAP
 
 The first-time demo flow includes the **License gate** and **Validation gate** (Guardrail screen) between Boot and Login — matching the documented screen flow in `doc/18-screen-flow.md`. On subsequent cycles, the demo loops back to Boot with the returning-user variant.
 
-The demo backend orchestrates this flow on a **timeline** — screens auto-advance with timed transitions and injected mock data. A full cycle takes approximately **68 seconds**. After the Update screen, the demo loops back to the Boot screen with the `boot_returning` state, and the cycle repeats indefinitely. Users can also navigate freely via keyboard at any time.
+The demo backend orchestrates this flow on a **timeline** — screens auto-advance with timed transitions and injected mock data. A full cycle takes approximately **64 seconds**. After the Update screen, the demo loops back to the Boot screen with the `boot_returning` state, and the cycle repeats indefinitely. Users can also navigate freely via keyboard at any time.
 
 ## Key Interactions
 

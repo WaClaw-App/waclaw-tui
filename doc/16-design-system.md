@@ -43,7 +43,7 @@ palette:
 - Rejection, skip, decline = netral. Bukan gagal. Cuma bukan jodoh.
 - `gold` HANYA buat jackpot leads, revenue numbers, dan conversion celebration. Kalau gold, berarti UANG.
 - `celebration` putih full-flash ONLY untuk conversion. Satu-satunya momen yang boleh secerah itu.
-- `locale` mengatur bahasa TUI. `"id"` = casual Indonesian (default), `"en"` = casual English. Switchable runtime via Ctrl+K atau `l`.
+- `locale` mengatur bahasa TUI. `"id"` = casual Indonesian (default), `"en"` = casual English. Switchable runtime via Ctrl+K → search "language" atau "bahasa". Key `l` navigates ke License screen (bukan language toggle).
 
 ---
 

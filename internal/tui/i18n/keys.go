@@ -1175,6 +1175,7 @@ const (
         KeyPaletteCmdResumeAll   = "palette.cmd_resume_all"
         KeyPaletteCmdLogoutWA    = "palette.cmd_logout_wa"
         KeyPaletteCmdForceRetry  = "palette.cmd_force_retry"
+        KeyPaletteCmdLanguage    = "palette.cmd_language"
 )
 
 // Notification severities

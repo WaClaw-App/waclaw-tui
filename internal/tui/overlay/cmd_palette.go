@@ -569,6 +569,7 @@ func buildCommandRegistry() []Command {
                 {Name: i18n.T("palette.cmd_shortcuts"), Shortcut: "?", Category: CmdCategoryOverlay, CategoryTag: "overlay"},
 
                 // Special.
+                {Name: i18n.T("palette.cmd_language"), Shortcut: "—", Category: CmdCategorySpecial, CategoryTag: "overlay", IsQuickAction: true},
                 {Name: i18n.T("palette.cmd_compose"), Shortcut: "—", Category: CmdCategorySpecial, CategoryTag: "compose"},
                 {Name: i18n.T("palette.cmd_search_leads"), Shortcut: "/", Category: CmdCategorySpecial, CategoryTag: "database"},
                 {Name: i18n.T("palette.cmd_export_csv"), Shortcut: "—", Category: CmdCategorySpecial, CategoryTag: "database"},

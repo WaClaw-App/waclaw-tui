@@ -269,7 +269,7 @@ func (t *Timeline) buildSequence() []Step {
                         Action: func() {
                                 t.engine.PushNotification(
                                         protocol.NotifStreakMilestone,
-                                        protocol.SeverityInformative,
+                                        protocol.SeverityPositive,
                                         map[string]any{
                                                 "message": "7 hari streak! Terus gas!",
                                                 "days":    7,
