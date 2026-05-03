@@ -1,0 +1,615 @@
+openapi: 3.0.3
+
+info:
+  title: WaClaw REST API
+  description: |
+    REST API for WaClaw's future web frontend. All endpoints map 1:1 to the
+    JSON-RPC 2.0 methods used by the TUI over stdio. The same protocol types
+    from `pkg/protocol` are shared across both transports.
+  version: 1.0.0
+  contact:
+    name: WaClaw App
+    url: https://github.com/WaClaw-App/waclaw
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+# ---------------------------------------------------------------------------
+# Tags
+# ---------------------------------------------------------------------------
+tags:
+  - name: Backend-to-Frontend
+    description: |
+      Methods invoked by the backend and delivered to the frontend
+      (SSE/WebSocket in production, direct POST for testing).
+  - name: Frontend-to-Backend
+    description: |
+      Methods invoked by the frontend and handled by the backend.
+  - name: Read-only
+    description: State query endpoints (GET).
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+paths:
+  /api/v1/navigate:
+    post:
+      tags: [Backend-to-Frontend]
+      operationId: navigate
+      summary: Navigate to a screen/state
+      description: |
+        Instructs the frontend to transition to a different screen and/or
+        state. Maps to the `navigate` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NavigateParams"
+      responses:
+        "200":
+          description: Navigation acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/update:
+    post:
+      tags: [Backend-to-Frontend]
+      operationId: update
+      summary: Push incremental data update
+      description: |
+        Pushes incremental data updates to the current screen without
+        changing the screen itself. Maps to the `update` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateParams"
+      responses:
+        "200":
+          description: Update acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/notify:
+    post:
+      tags: [Backend-to-Frontend]
+      operationId: notify
+      summary: Deliver a notification
+      description: |
+        Delivers a user-facing notification (toast, banner, or log entry).
+        Maps to the `notify` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotifyParams"
+      responses:
+        "200":
+          description: Notification acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/validate:
+    post:
+      tags: [Backend-to-Frontend]
+      operationId: validate
+      summary: Send validation feedback
+      description: |
+        Sends real-time validation feedback for the currently edited form or
+        input. Maps to the `validate` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateParams"
+      responses:
+        "200":
+          description: Validation acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/events/keypress:
+    post:
+      tags: [Frontend-to-Backend]
+      operationId: keypress
+      summary: Report a key press event
+      description: |
+        Sent every time the user presses a key that the frontend does not
+        handle locally. Maps to the `key_press` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyPressEvent"
+      responses:
+        "200":
+          description: Key press processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/events/action:
+    post:
+      tags: [Frontend-to-Backend]
+      operationId: action
+      summary: Report a semantic action
+      description: |
+        Sent when the user triggers a semantic action (e.g. "confirm",
+        "select", "toggle"). Maps to the `action` JSON-RPC method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActionEvent"
+      responses:
+        "200":
+          description: Action processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/events/request:
+    post:
+      tags: [Frontend-to-Backend]
+      operationId: request
+      summary: Request data from the backend
+      description: |
+        Sent when the frontend explicitly asks the backend for data
+        (e.g. "fetch_leads", "get_stats"). Maps to the `request` JSON-RPC
+        method.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestEvent"
+      responses:
+        "200":
+          description: Request fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/state:
+    get:
+      tags: [Read-only]
+      operationId: getState
+      summary: Get current full state snapshot
+      description: |
+        Returns the current full application state including the active screen,
+        worker statuses, and pending notifications.
+      responses:
+        "200":
+          description: Current state snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StateSnapshot"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/screens:
+    get:
+      tags: [Read-only]
+      operationId: getScreens
+      summary: Get screen list and metadata
+      description: |
+        Returns the list of all screens with their metadata, including
+        available states, labels, descriptions, and keyboard shortcuts.
+      responses:
+        "200":
+          description: Screen list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScreensResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/swagger.json:
+    get:
+      tags: [Read-only]
+      operationId: getSwagger
+      summary: Get OpenAPI specification
+      description: Returns this OpenAPI 3.0 specification as JSON.
+      responses:
+        "200":
+          description: OpenAPI specification
+          content:
+            application/json:
+              schema:
+                type: object
+
+# ---------------------------------------------------------------------------
+# Components
+# ---------------------------------------------------------------------------
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token for authenticated requests. Not all endpoints require
+        authentication; see individual endpoint security requirements.
+
+  schemas:
+    # -----------------------------------------------------------------------
+    # Backend → Frontend parameter types
+    # -----------------------------------------------------------------------
+    NavigateParams:
+      type: object
+      required: [screen]
+      properties:
+        screen:
+          type: string
+          description: Target screen identifier
+          example: scrape
+        state:
+          type: string
+          description: Target state within the screen (optional)
+          example: scraping_active
+        data:
+          description: Additional screen-specific data
+          oneOf:
+            - type: object
+            - type: "null"
+          additionalProperties: true
+
+    UpdateParams:
+      type: object
+      required: [screen, delta]
+      properties:
+        screen:
+          type: string
+          description: Screen that receives the update
+          example: monitor
+        delta:
+          description: Incremental data update payload
+          type: object
+          additionalProperties: true
+
+    NotifyParams:
+      type: object
+      required: [type, message]
+      properties:
+        type:
+          type: string
+          description: |
+            Notification type — must match the NotificationType constants in
+            pkg/protocol/types.go exactly. These are English identifiers,
+            not display strings; user-facing text comes from the i18n system.
+          enum:
+            - notif_response_received
+            - notif_multi_response
+            - notif_scrape_complete
+            - notif_batch_send_complete
+            - notif_wa_disconnect
+            - notif_wa_flag
+            - notif_health_score_drop
+            - notif_daily_limit
+            - notif_streak_milestone
+            - notif_config_error
+            - notif_validation_error
+            - notif_license_expired
+            - notif_device_conflict
+            - notif_follow_up_scheduled
+            - notif_lead_cold
+            - notif_update_available
+            - notif_upgrade_available
+          example: notif_scrape_complete
+        message:
+          type: string
+          description: User-facing message text
+          example: "Scrape complete! 150 leads found."
+        severity:
+          type: string
+          description: |
+            Notification severity — must match the Severity constants in
+            pkg/protocol/types.go exactly. Controls auto-dismiss timing
+            and visual styling in the TUI.
+          enum:
+            - severity_critical
+            - severity_positive
+            - severity_neutral
+            - severity_informative
+          default: severity_informative
+        timeout:
+          type: integer
+          description: |
+            Auto-dismiss timeout in milliseconds. 0 means the notification
+            persists until the user dismisses it manually.
+          default: 5000
+          example: 5000
+
+    ValidateParams:
+      type: object
+      required: [target]
+      properties:
+        target:
+          type: string
+          description: Field or section being validated
+          example: niche_config
+        errors:
+          type: array
+          description: List of validation errors (empty if clean)
+          items:
+            $ref: "#/components/schemas/ValidateItem"
+        clean:
+          type: boolean
+          description: True when validation passes with no issues
+          default: false
+
+    ValidateItem:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          description: Field name with the validation issue
+          example: queries_path
+        message:
+          type: string
+          description: Human-readable error description
+          example: "File tidak ditemukan: queries.md"
+        line:
+          type: integer
+          description: Line number in the source file (if applicable)
+          example: 14
+
+    # -----------------------------------------------------------------------
+    # Frontend → Backend event types
+    # -----------------------------------------------------------------------
+    KeyPressEvent:
+      type: object
+      required: [key]
+      properties:
+        key:
+          type: string
+          description: Key identifier
+          example: enter
+        modifiers:
+          type: string
+          description: Comma-separated modifier keys (ctrl, alt, shift)
+          example: "ctrl"
+        screen:
+          type: string
+          description: Current screen context
+          example: scrape
+
+    ActionEvent:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          description: Semantic action name
+          example: confirm
+        target:
+          type: string
+          description: Target of the action
+          example: lead_42
+        data:
+          type: object
+          description: Additional action-specific data
+          additionalProperties: true
+        screen:
+          type: string
+          description: Current screen context
+          example: review
+
+    RequestEvent:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          description: Data request type
+          example: fetch_leads
+        filter:
+          type: object
+          description: Optional filter parameters
+          additionalProperties: true
+        screen:
+          type: string
+          description: Current screen context
+          example: leads
+
+    # -----------------------------------------------------------------------
+    # Response types
+    # -----------------------------------------------------------------------
+    StateSnapshot:
+      type: object
+      properties:
+        current_screen:
+          type: string
+          description: Currently active screen
+          example: monitor
+        current_state:
+          type: string
+          description: Current state within the screen
+          example: live_dashboard
+        data:
+          type: object
+          description: Screen-specific data payload
+          additionalProperties: true
+        workers:
+          type: array
+          description: Status of all active workers
+          items:
+            $ref: "#/components/schemas/WorkerState"
+        notifications:
+          type: array
+          description: Pending user notifications
+          items:
+            $ref: "#/components/schemas/NotifyParams"
+
+    WorkerState:
+      type: object
+      properties:
+        niche:
+          type: string
+          description: Niche assigned to this worker
+          example: "kopi-jakarta"
+        status:
+          type: string
+          description: |
+            Current worker phase — must match the WorkerPhase constants in
+            pkg/protocol/types.go exactly.
+          enum:
+            - worker_spawning
+            - worker_scraping
+            - worker_qualifying
+            - worker_queuing
+            - worker_sending
+            - worker_idle
+            - worker_error
+            - worker_rate_limited
+            - worker_paused
+            - worker_config_error
+            - worker_stopped
+          example: worker_scraping
+        phase:
+          type: string
+          description: Current pipeline phase detail
+          example: "qualifying"
+
+    ScreensResponse:
+      type: object
+      properties:
+        screens:
+          type: array
+          description: List of all available screens
+          items:
+            $ref: "#/components/schemas/ScreenInfo"
+
+    ScreenInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique screen identifier
+          example: scrape
+        label:
+          type: string
+          description: Human-readable screen name
+          example: "Scrape"
+        description:
+          type: string
+          description: Short description of the screen's purpose
+          example: "Manage lead scraping across niches"
+        states:
+          type: array
+          description: Available states within this screen
+          items:
+            type: string
+          example:
+            - scraping_active
+            - scrape_idle
+            - scrape_error
+        shortcut:
+          type: string
+          description: Keyboard shortcut to navigate to this screen
+          example: "2"
+
+    # -----------------------------------------------------------------------
+    # Generic responses
+    # -----------------------------------------------------------------------
+    SuccessResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          description: Whether the operation succeeded
+          example: true
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: integer
+              description: JSON-RPC 2.0 error code
+              example: -32600
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Invalid request body"
+            data:
+              description: Optional additional error details
+              oneOf:
+                - type: object
+                - type: "null"
+              additionalProperties: true
