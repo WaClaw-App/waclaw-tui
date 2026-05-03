@@ -9,9 +9,8 @@
 | Metric | Total |
 |--------|-------|
 | Total Screens | 20 |
-| Total States | 110 |
-| Total Variants | 20 |
-| Total Views | 130 |
+| Total Screen States | 119 |
+| Total Overlay States | 9 |
 | Notification Types | 17 |
 | Confirmation Overlays | 4 |
 
@@ -22,28 +21,28 @@
 ### SCREEN 1: BOOT → FIRST IMPRESSION
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `first_time` | User baru pertama kali buka |
-| 2 | state | `returning` | User sudah login & configure (army marching anim) |
-| 3 | variant | `returning + ada response baru` | Returning + ada response masuk |
-| 4 | variant | `returning + wa disconnect` | Returning + WA putus (per slot) |
-| 5 | variant | `returning + config error` | Returning + config broken, partial pause |
-| 6 | variant | `returning + lisensi expired` | Lisensi expired, army berhenti |
-| 7 | variant | `returning + device conflict` | Lisensi aktif di device lain, hard stop |
+| 1 | state | `boot_first_time` | User baru pertama kali buka |
+| 2 | state | `boot_returning` | User sudah login & configure (army marching anim) |
+| 3 | state | `boot_returning_response` | Returning + ada response masuk |
+| 4 | state | `boot_returning_error` | Returning + WA putus (per slot) |
+| 5 | state | `boot_returning_config_error` | Returning + config broken, partial pause |
+| 6 | state | `boot_returning_license_expired` | Lisensi expired, army berhenti |
+| 7 | state | `boot_returning_device_conflict` | Lisensi aktif di device lain, hard stop |
 
-**Subtotal: 2 states + 5 variants = 7 views**
+**Subtotal: 7 states**
 
 ---
 
 ### SCREEN 2: LOGIN → TRUST (WA ROTATOR)
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `qr_waiting` | Nunggu scan QR, slot info |
-| 2 | state | `qr_scanned` | Scan terdeteksi, tanya tambah slot |
+| 1 | state | `login_qr_waiting` | Nunggu scan QR, slot info |
+| 2 | state | `login_qr_scanned` | Scan terdeteksi, tanya tambah slot |
 | 3 | state | `login_success` | Terhubung, tanya tambah nomor |
 | 4 | state | `login_expired` | Session expired, slot aktif tetap jalan |
 | 5 | state | `login_failed` | Gagal nyambung, slot lain jalan |
 
-**Subtotal: 5 states + 0 variants = 5 views**
+**Subtotal: 5 states**
 
 ---
 
@@ -64,62 +63,62 @@
 ### SCREEN 4: SCRAPE → ANTICIPATION
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `scraping_active` | Single niche aktif scraping |
-| 2 | state | `scraping_multi_active` | Multi niche paralel scraping |
-| 3 | state | `scraping_multi_staggered` | Multi niche beda fase |
+| 1 | state | `scrape_active` | Single niche aktif scraping |
+| 2 | state | `scrape_multi_active` | Multi niche paralel scraping |
+| 3 | state | `scrape_multi_staggered` | Multi niche beda fase |
 | 4 | state | `scrape_idle` | Nunggu interval berikutnya |
 | 5 | state | `scrape_empty` | Zero results |
 | 6 | state | `scrape_error` | Scraper crash / network error |
 | 7 | state | `scrape_gmaps_limited` | Google Maps throttle / rate limit |
-| 8 | state | `scrape_wa_validation_progress` | Progress cek nomor WA (pre-validation) |
-| 9 | variant | `scrape_auto_approved` | Auto-pilot mode, auto-qualify |
-| 10 | variant | `scrape_with_wa_validation` | Scrape + WA pre-validation stats |
-| 11 | variant | `scrape_high_value_reveal` | Slot machine jackpot lead (skor 9+) |
-| 12 | variant | `scrape_batch_complete` | Cascade batch completion |
+| 8 | state | `scrape_auto_approved` | Auto-pilot mode, auto-qualify |
+| 9 | state | `scrape_high_value_reveal` | Slot machine jackpot lead (skor 9+) |
+| 10 | state | `scrape_batch_complete` | Cascade batch completion |
+| 11 | state | `scrape_wa_validation` | WA pre-validation running |
+| 12 | state | `scrape_wa_validation_progress` | Progress cek nomor WA (pre-validation) |
 
-**Subtotal: 8 states + 4 variants = 12 views**
+**Subtotal: 12 states**
 
 ---
 
 ### SCREEN 5: LEAD REVIEW → CURATED
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `reviewing` | Review lead satu-satu (with WA status) |
-| 2 | state | `lead_detail` | Detail satu lead (press `d`) |
-| 3 | state | `template_preview` | Preview varian (press `1-3`) |
-| 4 | state | `queue_complete` | Semua lead sudah di-reviewed |
+| 1 | state | `review_reviewing` | Review lead satu-satu (with WA status) |
+| 2 | state | `review_lead_detail` | Detail satu lead (press `d`) |
+| 3 | state | `review_template_preview` | Preview varian (press `1-3`) |
+| 4 | state | `review_queue_complete` | Semua lead sudah di-reviewed |
 
-**Subtotal: 4 states + 0 variants = 4 views**
+**Subtotal: 4 states**
 
 ---
 
 ### SCREEN 6: SEND → AUTO-PILOT (WA ROTATOR)
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `sending_active` | Multi-niche + WA rotator + varian rotasi + WA validated |
-| 2 | state | `sending_paused` | User pause manual |
-| 3 | state | `sending_off_hours` | Di luar jam kerja |
-| 4 | state | `sending_rate_limited` | Limit per jam capai |
-| 5 | state | `sending_daily_limit` | Limit harian capai |
-| 6 | state | `sending_failed` | Pesan gagal (RARE karena WA pre-validation) |
-| 7 | state | `sending_all_slots_down` | Semua nomor WA putus |
-| 8 | variant | `sending_with_response` | Response masuk saat kirim |
+| 1 | state | `send_active` | Multi-niche + WA rotator + varian rotasi + WA validated |
+| 2 | state | `send_paused` | User pause manual |
+| 3 | state | `send_off_hours` | Di luar jam kerja |
+| 4 | state | `send_rate_limited` | Limit per jam capai |
+| 5 | state | `send_daily_limit` | Limit harian capai |
+| 6 | state | `send_failed` | Pesan gagal (RARE karena WA pre-validation) |
+| 7 | state | `send_all_slots_down` | Semua nomor WA putus |
+| 8 | state | `send_with_response` | Response masuk saat kirim |
 
-**Subtotal: 7 states + 1 variant = 8 views**
+**Subtotal: 8 states**
 
 ---
 
 ### SCREEN 7: MONITOR → COMMAND CENTER
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `live_dashboard` | Multi-niche + ambient data rain + breathing stats |
-| 2 | state | `idle_background` | Army kerja, WA rotator info |
-| 3 | state | `dashboard_night` | Di luar jam kerja, semua idle |
-| 4 | state | `dashboard_error` | WA putus per slot, partial operation |
-| 5 | state | `dashboard_empty` | Baru mulai, belum ada data |
-| 6 | variant | `dashboard_with_pending_responses` | Ada response belum di-handle |
+| 1 | state | `monitor_live_dashboard` | Multi-niche + ambient data rain + breathing stats |
+| 2 | state | `monitor_idle_background` | Army kerja, WA rotator info |
+| 3 | state | `monitor_night` | Di luar jam kerja, semua idle |
+| 4 | state | `monitor_error` | WA putus per slot, partial operation |
+| 5 | state | `monitor_empty` | Baru mulai, belum ada data |
+| 6 | state | `monitor_pending_responses` | Ada response belum di-handle |
 
-**Subtotal: 5 states + 1 variant = 6 views**
+**Subtotal: 6 states**
 
 ---
 
@@ -129,16 +128,16 @@
 | 1 | state | `response_positive` | Jelas tertarik |
 | 2 | state | `response_curious` | Nanya-nanya, interested tapi ragu |
 | 3 | state | `response_negative` | Tidak tertarik |
-| 4 | state | `response_stop_detected` | Orang bilang stop — auto-add do_not_contact |
-| 5 | state | `response_deal_detected` | Closing trigger match — auto-flag deal |
-| 6 | state | `response_hot_lead_detected` | Hot lead trigger — auto-prioritize |
-| 7 | state | `response_maybe` | Tidak jelas, bisa jadi tertarik |
-| 8 | state | `response_auto_reply` | Detected bot/auto-reply |
-| 9 | state | `offer_preview` | Preview sebelum kirim offer |
-| 10 | state | `response_multi_queue` | 3+ response barengan, triage view |
-| 11 | state | `conversion` | DEAL closed — 4-phase full drama |
+| 4 | state | `response_maybe` | Tidak jelas, bisa jadi tertarik |
+| 5 | state | `response_auto_reply` | Detected bot/auto-reply |
+| 6 | state | `response_offer_preview` | Preview sebelum kirim offer |
+| 7 | state | `response_multi_queue` | 3+ response barengan, triage view |
+| 8 | state | `response_conversion` | DEAL closed — 4-phase full drama |
+| 9 | state | `response_hot_lead` | Hot lead trigger — auto-prioritize |
+| 10 | state | `response_stop_detected` | Orang bilang stop — auto-add do_not_contact |
+| 11 | state | `response_deal_detected` | Closing trigger match — auto-flag deal |
 
-**Subtotal: 11 states + 0 variants = 11 views**
+**Subtotal: 11 states**
 
 ---
 
@@ -147,13 +146,13 @@
 |---|------|------|-----------|
 | 1 | state | `leads_list` | Semua lead, grouped by status (incl. follow-up & dingin) |
 | 2 | state | `leads_filtered` | Filter by status tertentu |
-| 3 | state | `lead_full_detail` | Single lead complete view |
-| 4 | variant | `lead_follow_up_due` | Sudah dikontak, belum jawab, waktunya follow-up |
-| 5 | variant | `lead_cold` | 2x follow-up belum jawab — lead dingin |
-| 6 | variant | `lead_never_contacted` | Baru masuk, belum dikontak |
-| 7 | variant | `lead_converted` | Sudah deal — full timeline |
+| 3 | state | `leads_full_detail` | Single lead complete view |
+| 4 | state | `leads_follow_up_due` | Sudah dikontak, belum jawab, waktunya follow-up |
+| 5 | state | `leads_cold` | 2x follow-up belum jawab — lead dingin |
+| 6 | state | `leads_never_contacted` | Baru masuk, belum dikontak |
+| 7 | state | `leads_converted` | Sudah deal — full timeline |
 
-**Subtotal: 3 states + 4 variants = 7 views**
+**Subtotal: 7 states**
 
 ---
 
@@ -175,9 +174,9 @@
 | 1 | state | `workers_overview` | Live view semua worker |
 | 2 | state | `worker_detail` | Deep dive satu worker |
 | 3 | state | `worker_add_niche` | Tambah niche baru ke pool |
-| 4 | state | `worker_paused` | Worker yang di-pause manual |
+| 4 | state | `workers_paused` | Worker yang di-pause manual |
 
-**Subtotal: 4 states + 0 variants = 4 views**
+**Subtotal: 4 states**
 
 ---
 
@@ -213,9 +212,10 @@
 | 2 | state | `validation_errors` | Satu atau lebih config broken, detail per file |
 | 3 | state | `validation_warnings` | Valid tapi ada warning (deprecated, unusual, only 1 variant) |
 | 4 | state | `validation_fix` | Setelah fix + re-validate |
-| 5 | variant | `validation_first_time` | First-time setup validation, more guidance |
+| 5 | state | `validation_first_time` | First-time setup validation, more guidance |
+| 6 | state | `validation_reload_error` | Error during config reload validation |
 
-**Subtotal: 4 states + 1 variant = 5 views**
+**Subtotal: 6 states**
 
 ---
 
@@ -278,9 +278,8 @@
 | 3 | state | `explorer_category_detail` | Detail kategori + preview config yang bakal di-generate |
 | 4 | state | `explorer_generating` | Auto-generate niche.yaml + template files |
 | 5 | state | `explorer_generated` | Config berhasil di-generate, siap gas |
-| 6 | variant | `explorer dengan area auto-detect` | Area auto-detect dari config.yaml yang udah ada |
 
-**Subtotal: 5 states + 1 variant = 6 views**
+**Subtotal: 5 states**
 
 ---
 
@@ -293,9 +292,9 @@
 | 4 | state | `upgrade_available` | Ada major upgrade (butuh lisensi baru) |
 | 5 | state | `upgrade_license_input` | Input lisensi v2 |
 | 6 | state | `license_expired_with_upgrade` | Lisensi v1 expired + ada v2 tersedia |
-| 7 | variant | `startup_check` | Background update check saat boot (non-blocking) |
+| 7 | state | `startup_check` | Background update check saat boot (non-blocking) |
 
-**Subtotal: 6 states + 1 variant = 7 views**
+**Subtotal: 7 states**
 
 ---
 
@@ -303,23 +302,23 @@
 
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | notif | `response_masuk` | Ada yang balas pesan |
-| 2 | notif | `multi_response` | 3+ responses at once, auto-classified |
-| 3 | notif | `scrape_selesai` | Multi-niche batch selesai |
-| 4 | notif | `batch_kirim_selesai` | Batch pesan terkirim |
-| 5 | notif | `wa_disconnect` | WA putus per slot, partial info |
-| 6 | notif | `wa_flag` | Nomor kena flag WA, auto-pause |
-| 7 | notif | `health_score_drop` | Health score mendekati threshold |
-| 8 | notif | `limit_harian` | Limit harian capai |
-| 9 | notif | `streak_milestone` | Achievement unlocked |
-| 10 | notif | `config_error` | Config broken, worker paused |
-| 11 | notif | `validation_error` | Full validation check gagal |
-| 12 | notif | `license_expired` | Lisensi expired, army berhenti |
-| 13 | notif | `device_conflict` | Lisensi aktif di device lain, hard stop |
-| 14 | notif | `followup_terjadwal` | Follow-up terjadwal hari ini |
-| 15 | notif | `lead_dingin` | Lead dingin setelah 2x follow-up |
-| 16 | notif | `update_available` | Minor update tersedia (gratis, auto-dismiss 15s) |
-| 17 | notif | `upgrade_available` | Major upgrade tersedia (butuh lisensi baru, auto-dismiss 20s) |
+| 1 | notif | `notif_response_received` | Ada yang balas pesan |
+| 2 | notif | `notif_multi_response` | 3+ responses at once, auto-classified |
+| 3 | notif | `notif_scrape_complete` | Multi-niche batch selesai |
+| 4 | notif | `notif_batch_send_complete` | Batch pesan terkirim |
+| 5 | notif | `notif_wa_disconnect` | WA putus per slot, partial info |
+| 6 | notif | `notif_wa_flag` | Nomor kena flag WA, auto-pause |
+| 7 | notif | `notif_health_score_drop` | Health score mendekati threshold |
+| 8 | notif | `notif_daily_limit` | Limit harian capai |
+| 9 | notif | `notif_streak_milestone` | Achievement unlocked |
+| 10 | notif | `notif_config_error` | Config broken, worker paused |
+| 11 | notif | `notif_validation_error` | Full validation check gagal |
+| 12 | notif | `notif_license_expired` | Lisensi expired, army berhenti |
+| 13 | notif | `notif_device_conflict` | Lisensi aktif di device lain, hard stop |
+| 14 | notif | `notif_follow_up_scheduled` | Follow-up terjadwal hari ini |
+| 15 | notif | `notif_lead_cold` | Lead dingin setelah 2x follow-up |
+| 16 | notif | `notif_update_available` | Minor update tersedia (gratis, auto-dismiss 15s) |
+| 17 | notif | `notif_upgrade_available` | Major upgrade tersedia (butuh lisensi baru, auto-dismiss 20s) |
 
 **Subtotal: 17 notification types**
 
@@ -329,10 +328,10 @@
 
 | # | Nama | Trigger |
 |---|------|---------|
-| 1 | `bulk_offer` | "auto-kirim offer ke semua" |
-| 2 | `bulk_delete` | Hapus banyak leads |
-| 3 | `bulk_archive` | Archive banyak leads |
-| 4 | `force_device_disconnect` | Putuskan waclaw di device lain |
+| 1 | `confirm_bulk_offer` | "auto-kirim offer ke semua" |
+| 2 | `confirm_bulk_delete` | Hapus banyak leads |
+| 3 | `confirm_bulk_archive` | Archive banyak leads |
+| 4 | `confirm_force_disconnect` | Putuskan waclaw di device lain |
 
 **Subtotal: 4 confirmation overlays**
 
@@ -341,43 +340,43 @@
 ## Visual Summary
 
 ```
-SCREEN              STATES  VARIANTS  TOTAL  RATIO
-─────────────────────────────────────────────────────────
-1  BOOT                2       5       7     ███████░░░
-2  LOGIN               5       0       5     █████░░░░░
-3  NICHE SELECT        5       1       6     ██████░░░░
-4  SCRAPE              8       4      12     ████████████
-5  LEAD REVIEW         4       0       4     ████░░░░░░
-6  SEND                7       1       8     ████████░░
-7  MONITOR             5       1       6     ██████░░░░
-8  RESPONSE           11       0      11     ███████████
-9  LEADS DB            3       4       7     ███████░░░
-10 TEMPLATE            4       0       4     ████░░░░░░
-11 WORKERS             4       0       4     ████░░░░░░
-12 ANTI-BAN            5       0       5     █████░░░░░
-13 SETTINGS            4       0       4     ████░░░░░░
-14 GUARDRAIL           4       1       5     █████░░░░░
-15 COMPOSE             3       0       3     ███░░░░░░░
-16 HISTORY             3       0       3     ███░░░░░░░
-17 FOLLOW-UP           6       0       6     ██████░░░░
-18 LICENSE             7       0       7     ███████░░░
-19 EXPLORER            5       1       6     ██████░░░░
-20 UPDATE              6       1       7     ███████░░░
-─────────────────────────────────────────────────────────
-TOTAL               110      20      130
+SCREEN              STATES
+──────────────────────────────────────────────────
+1  BOOT                7
+2  LOGIN               5
+3  NICHE SELECT        5
+4  SCRAPE             12
+5  LEAD REVIEW         4
+6  SEND                8
+7  MONITOR             6
+8  RESPONSE           11
+9  LEADS DB            7
+10 TEMPLATE            4
+11 WORKERS             4
+12 ANTI-BAN            5
+13 SETTINGS            4
+14 GUARDRAIL           6
+15 COMPOSE             3
+16 HISTORY             3
+17 FOLLOW-UP           6
+18 LICENSE             7
+19 EXPLORER            5
+20 UPDATE              7
+──────────────────────────────────────────────────
+TOTAL               119
 ```
 
 ---
 
 ## Top 3 Paling Kompleks
 
-1. **SCREEN 4: SCRAPE** — 8 states, 4 variants = 12 views
+1. **SCREEN 4: SCRAPE** — 12 states
    - Multi-niche paralel + high-value reveal + batch cascade + gmaps throttle + WA pre-validation = state explosion terbesar
-2. **SCREEN 8: RESPONSE** — 11 states, 0 variants = 11 views
+2. **SCREEN 8: RESPONSE** — 11 states
    - Paling banyak state: 5 tipe response klasik + 3 closing trigger states (deal/hot_lead/stop) + multi-queue + offer preview + conversion drama
-3. **SCREEN 18: LICENSE** — 7 states, 0 variants = 7 views
+3. **SCREEN 18: LICENSE** — 7 states
    - Hard gate system: input → validating → valid/invalid/expired/device_conflict/server_error = semua kondisi lisensi
-4. **SCREEN 20: UPDATE & UPGRADE** — 6 states, 1 variant = 7 views
+4. **SCREEN 20: UPDATE & UPGRADE** — 7 states
    - Minor update (gratis) + major upgrade (lisensi baru) + download progress + startup check = semua kondisi versi
 
 ---
@@ -427,20 +426,20 @@ TOTAL               110      20      130
 ### NERD STATS → VITALS (Toggle Overlay)
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `hidden` | Default — overlay nggak keliatan |
-| 2 | state | `minimal` | 1-line footer (CPU/RAM/Goroutines/DB/Uptime) |
-| 3 | state | `expanded` | 3-line panel with mini bar charts |
+| 1 | state | `nerd_stats_hidden` | Default — overlay nggak keliatan |
+| 2 | state | `nerd_stats_minimal` | 1-line footer (CPU/RAM/Goroutines/DB/Uptime) |
+| 3 | state | `nerd_stats_expanded` | 3-line panel with mini bar charts |
 
 **Subtotal: 3 overlay states (toggle via backtick ` key)**
 
 ### CTRL+K → COMMAND PALETTE (Global Overlay)
 | # | Tipe | Nama | Deskripsi |
 |---|------|------|-----------|
-| 1 | state | `cmd_closed` | Default — palette hidden |
-| 2 | state | `cmd_open` | Palette terbuka, search aktif, fuzzy filter |
-| 3 | state | `cmd_executing` | Command dipilih, lagi eksekusi |
-| 4 | state | `cmd_empty` | Search nggak nemu match + suggestions |
-| 5 | variant | `cmd_with_recent` | Recently used commands di atas |
-| 6 | variant | `cmd_quick_action` | Action langsung execute tanpa pindah screen |
+| 1 | state | `cmd_palette_closed` | Default — palette hidden |
+| 2 | state | `cmd_palette_open` | Palette terbuka, search aktif, fuzzy filter |
+| 3 | state | `cmd_palette_executing` | Command dipilih, lagi eksekusi |
+| 4 | state | `cmd_palette_empty` | Search nggak nemu match + suggestions |
+| 5 | state | `cmd_palette_with_recent` | Recently used commands di atas |
+| 6 | state | `cmd_palette_quick_action` | Action langsung execute tanpa pindah screen |
 
-**Subtotal: 4 overlay states + 2 variants = 6 overlay views (toggle via Ctrl+K)**
+**Subtotal: 6 overlay states (toggle via Ctrl+K)**

@@ -348,12 +348,6 @@ func (t *Timeline) buildSequence() []Step {
                 {
                         Delay:  2 * time.Second,
                         Action: func() {
-                                t.engine.transitionTo(protocol.ScreenGuardrail, protocol.ValidationClean)
-                        },
-                },
-                {
-                        Delay:  2 * time.Second,
-                        Action: func() {
                                 t.engine.transitionTo(protocol.ScreenCompose, protocol.ComposeDraft)
                         },
                 },
@@ -367,12 +361,6 @@ func (t *Timeline) buildSequence() []Step {
                         Delay:  2 * time.Second,
                         Action: func() {
                                 t.engine.transitionTo(protocol.ScreenFollowUp, protocol.FollowUpDashboard)
-                        },
-                },
-                {
-                        Delay:  2 * time.Second,
-                        Action: func() {
-                                t.engine.transitionTo(protocol.ScreenLicense, protocol.LicenseInput)
                         },
                 },
                 {

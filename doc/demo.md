@@ -32,19 +32,21 @@ The demo backend is the **same scenario/state engine** used in production. It dr
 |----------|-------------|
 | Marketing videos | Record the full TUI flow for promo content |
 | Screenshots | Capture terminal shots for landing pages or docs |
-| UI evaluation | Experience all 20 screens and 110 states end-to-end |
+| UI evaluation | Experience all 20 screens and 119 states end-to-end |
 | Prospect demo | Try the product visually without setup or commitment |
 
 ## Screen Flow (Demo Order)
 
 ```
-BOOT → LOGIN → NICHE SELECT → SCRAPE → LEAD REVIEW → SEND
-  → MONITOR → RESPONSE → LEADS DB → TEMPLATES → WORKERS
-  → ANTI-BAN → SETTINGS → GUARDRAIL → COMPOSE → HISTORY
-  → FOLLOW-UP → LICENSE → NICHE EXPLORER → UPDATE
+BOOT → LICENSE → GUARDRAIL (Validation) → LOGIN → NICHE SELECT → SCRAPE
+  → LEAD REVIEW → SEND → MONITOR → RESPONSE → LEADS DB → TEMPLATES
+  → WORKERS → ANTI-BAN → SETTINGS → COMPOSE → HISTORY
+  → FOLLOW-UP → NICHE EXPLORER → UPDATE
 ```
 
-The demo backend orchestrates this flow on a **timeline** — screens auto-advance with timed transitions and injected mock data. Users can also navigate freely via keyboard.
+The first-time demo flow includes the **License gate** and **Validation gate** (Guardrail screen) between Boot and Login — matching the documented screen flow in `doc/18-screen-flow.md`. On subsequent cycles, the demo loops back to Boot with the returning-user variant.
+
+The demo backend orchestrates this flow on a **timeline** — screens auto-advance with timed transitions and injected mock data. A full cycle takes approximately **68 seconds**. After the Update screen, the demo loops back to the Boot screen with the `boot_returning` state, and the cycle repeats indefinitely. Users can also navigate freely via keyboard at any time.
 
 ## Key Interactions
 
@@ -69,6 +71,23 @@ The demo backend orchestrates this flow on a **timeline** — screens auto-advan
 
 ## Tech Stack (Shared with Production)
 
-- **Frontend**: Go 1.22+ / bubbletea / lipgloss / bubbles / glamour / huh (Charm.sh)
+- **Frontend**: Go 1.24+ / bubbletea / lipgloss / bubbles / glamour / huh (Charm.sh)
 - **Protocol**: JSON-RPC 2.0 over stdio (`pkg/protocol`, `pkg/transport`)
-- **Entry point**: `scripts/demo.sh` pipes demo backend binary into TUI binary
+- **Entry point**: `make demo` builds both binaries and runs `scripts/demo.sh`, which pipes the demo backend binary into the TUI binary via named pipes (FIFOs)
+- **REST API**: The demo backend also starts a REST server on `:8080` (configurable via `WA_REST_ADDR`) for the future web frontend
+
+## How to Run
+
+```bash
+# Prerequisites: Go 1.24+
+
+# Clone and build
+git clone https://github.com/WaClaw-App/waclaw-tui.git
+cd waclaw-tui
+make demo
+```
+
+The `make demo` target:
+1. Builds `waclaw-backend` and `waclaw-tui` binaries into `./bin/`
+2. Runs `scripts/demo.sh`, which sets up bidirectional named pipes and launches both processes
+3. The TUI opens in your terminal with the demo timeline running automatically

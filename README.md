@@ -15,10 +15,10 @@
 
 **Lu cuma nonton. WaClaw yang kerja.**
 
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
+[![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
 [![Charm](https://img.shields.io/badge/Charm.sh-Ecosystem-FF69B4?style=flat-square)](https://charm.sh/)
 [![Screens](https://img.shields.io/badge/Screens-20-blueviolet?style=flat-square)]()
-[![States](https://img.shields.io/badge/States-110-orange?style=flat-square)]()
+[![States](https://img.shields.io/badge/States-119-orange?style=flat-square)]()
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)]()
 
 </div>
@@ -48,6 +48,14 @@ Running `waclaw demo` launches the TUI with the **scenario demo backend** instea
 The demo backend is the same scenario engine that drives the TUI in production — it orchestrates screen navigation, injects mock data, and fires timed state transitions — but it does not connect to WhatsApp, scrape Google Maps, or send any real messages. Its sole purpose is to drive the TUI through the full screen flow with realistic-looking data so you can record marketing videos, take screenshots, or just see how the UI behaves end-to-end without needing a live WA session or a valid license.
 
 In other words: `waclaw demo` = waclaw-tui + scenario demo backend binary. No real features. Pure showcase.
+
+**Prerequisites:** Go 1.24+ must be installed.
+
+```bash
+make demo
+```
+
+See [`doc/demo.md`](doc/demo.md) for the full demo documentation including screen flow, timing, and keyboard shortcuts.
 
 ---
 
@@ -89,7 +97,7 @@ In other words: `waclaw demo` = waclaw-tui + scenario demo backend binary. No re
 
 The backend is the **scenario engine** — it decides which screen to show, what data to display, and when transitions happen. The TUI renders whatever the backend tells it to. The REST API exposes the same scenario engine for future web frontends, with Swagger auto-generated from the shared `pkg/protocol` types.
 
-**Multi-Language UI:** The TUI supports two locales — casual Indonesian (`id`, default) and casual English (`en`). All display strings live in `internal/tui/i18n/`. Locale is configured in `~/.waclaw/config.yaml` and switchable at runtime via Ctrl+K or `l` key.
+**Multi-Language UI:** The TUI supports two locales — casual Indonesian (`id`, default) and casual English (`en`). All display strings live in `internal/tui/i18n/`. Locale is configured in `~/.waclaw/config.yaml` and switchable at runtime via the command palette (Ctrl+K → search "language" or "bahasa"). The `l` key navigates to the License screen.
 
 **DRY Convention:** The codebase follows a strict Don't Repeat Yourself principle for types, interfaces, and constants:
 
